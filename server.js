@@ -31,7 +31,7 @@ app.post('/cadastrar', async (req, res) => {
 
     // O status 201 significa "Created" (Criado)
     res.status(201).json({ 
-      mensagem: 'FOI ESSA BUCETA!',
+      mensagem: 'Usuário cadastrado com sucesso!',
       id: resultado.insertId, // Retorna o ID gerado automaticamente pelo MySQL
       name, 
       email 
