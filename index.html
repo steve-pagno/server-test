@@ -8,7 +8,7 @@
 </head>
 <body>
     <div class="container py-4">
-        <form action="/cadastrar" method="post" class="row g-3 align-items-end mb-4">
+        <form id="form-cadastro" class="row g-3 align-items-end mb-3">
             <div class="col-auto">
                 <label for="name" class="form-label">Nome</label>
                 <input type="text" id="name" name="name" class="form-control">
@@ -23,6 +23,8 @@
                 <input type="submit" value="Cadastrar" class="btn btn-primary">
             </div>
         </form>
+
+        <div id="mensagem-cadastro" class="alert d-none" role="alert"></div>
 
         <hr>
 
@@ -63,6 +65,44 @@
 
         // Chama a função assim que a página é aberta
         carregarUsuarios();
+
+        // Mostra uma mensagem de sucesso ou erro sem sair da página
+        function mostrarMensagem(texto, tipo) {
+            const caixaMensagem = document.getElementById('mensagem-cadastro');
+            caixaMensagem.textContent = texto;
+            caixaMensagem.className = `alert alert-${tipo}`;
+        }
+
+        // Intercepta o envio do formulário para cadastrar via fetch, sem recarregar a página
+        document.getElementById('form-cadastro').addEventListener('submit', async (evento) => {
+            evento.preventDefault();
+
+            const formulario = evento.target;
+            const name = formulario.name.value;
+            const email = formulario.email.value;
+
+            try {
+                const resposta = await fetch('/cadastrar', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ name, email })
+                });
+
+                const dados = await resposta.json();
+
+                if (!resposta.ok) {
+                    mostrarMensagem(dados.erro || 'Erro ao cadastrar usuário', 'danger');
+                    return;
+                }
+
+                mostrarMensagem(dados.mensagem, 'success');
+                formulario.reset();
+                carregarUsuarios();
+            } catch (erro) {
+                console.error('Erro ao cadastrar:', erro);
+                mostrarMensagem('Erro ao cadastrar usuário', 'danger');
+            }
+        });
     </script>
 </body>
 </html>
